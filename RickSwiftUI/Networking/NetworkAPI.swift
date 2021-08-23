@@ -9,8 +9,9 @@ import Foundation
 
 enum NetworkResult<Data> {
     case success(Data)
-    case networkError(Error?)
-    case serverError(String?)
+    case networkError(Error)
+    case serverError(Error)
+    case decodingError(Error)
 }
 
 protocol NetworkAPI {
@@ -37,7 +38,7 @@ extension NetworkAPI {
                     let result: APIData = try JSONDecoder().decode(APIData.self, from: data!)
                     completion(.success(result))
                 } catch let error {
-                    completion(.networkError(error))
+                    completion(.decodingError(error))
                 }
             }
         }

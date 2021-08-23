@@ -38,17 +38,17 @@ struct MovieSearchView: View {
 
     @ViewBuilder
     var searchResultsView: some View {
-        if let searchResults = viewModel.currentSearch {
-            ScrollView {
-                LazyVStack {
-                    ForEach(searchResults, id: \.id) { movie in
-                        Text(movie.title)
-                    }
-                }
-            }
-        } else {
+//        if let searchResults = viewModel.currentSearch {
+//            ScrollView {
+//                LazyVStack {
+//                    ForEach(searchResults, id: \.id) { movie in
+//                        Text(movie.title)
+//                    }
+//                }
+//            }
+//        } else {
             Spacer()
-        }
+//        }
     }
 }
 

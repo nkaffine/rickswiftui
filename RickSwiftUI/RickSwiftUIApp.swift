@@ -11,7 +11,8 @@ import SwiftUI
 struct RickSwiftUIApp: App {
     var body: some Scene {
         WindowGroup {
-            MainTabView()
+            MovieWatchList(viewModel: MovieWatchListViewModel())
+//            MainTabView()
 //            MovieSearchView(viewModel: MovieSearchViewModel())
         }
     }
