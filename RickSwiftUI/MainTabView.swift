@@ -32,7 +32,8 @@ struct MainTabView: View {
     }
     
     private var dates: some View {
-        Text("Dates")
+        let viewModel = DateViewModel()
+        return DateView(viewModel: viewModel)
     }
 }
 

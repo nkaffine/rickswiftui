@@ -12,6 +12,7 @@ struct RickSwiftUIApp: App {
     var body: some Scene {
         WindowGroup {
             MainTabView()
+//            MovieSearchView(viewModel: MovieSearchViewModel())
         }
     }
 }
