@@ -7,17 +7,17 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "8EE59AD7-69A4-4480-86BC-790CE1938980"
-            shouldBeEnabled = "Yes"
+            uuid = "9F13644A-7CD0-4F70-B8FD-4DEDD8AC8529"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "RickSwiftUI/User Interface/MovieWatchListViewModel.swift"
+            filePath = "RickSwiftUI/User Interface/Movies/Components/MovieCard.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "15"
-            endingLineNumber = "15"
-            landmarkName = "search(forMovieWithTitle:)"
-            landmarkType = "7">
+            startingLineNumber = "33"
+            endingLineNumber = "33"
+            landmarkName = "body"
+            landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

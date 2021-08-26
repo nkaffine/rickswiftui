@@ -29,13 +29,19 @@ struct DateCardView<InfoContent: View>: View {
 
     var headerImage: some View {
         let imageLoader = ImageLoader(link: headerImageLink)
-        return RemoteImageView(imageLoader: imageLoader) {
-                ProgressView()
-            } errorView: {
+        return RemoteImageView(imageLoader: imageLoader) { geometry in
+            ProgressView().frame(width: geometry.size.width,
+                                 height: geometry.size.height,
+                                 alignment: .center)
+            } errorView: { geometry in
                 // TODO: need to make this not just related to films.
-                placeholderImage
-            } successView: { image in
-                image
+                placeholderImage.frame(width: geometry.size.width,
+                                       height: geometry.size.height,
+                                       alignment: .center)
+            } successView: { image, geometry in
+                image.frame(width: geometry.size.width,
+                            height: geometry.size.height,
+                            alignment: .center)
             }
             .frame(height: 136)
     }

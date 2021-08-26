@@ -11,7 +11,9 @@ import SwiftUI
 struct RickSwiftUIApp: App {
     var body: some Scene {
         WindowGroup {
-            MovieWatchList(viewModel: MovieWatchListViewModel())
+            let model = MockMovieWatchList(watchedMovies: [], unwatchedMovies: [MockMovies.lionKing, MockMovies.endgame])
+            let viewModel = MovieListCoordinatorViewModel(model: model)
+            MovieListCoordinator(viewModel: viewModel)
 //            MainTabView()
 //            MovieSearchView(viewModel: MovieSearchViewModel())
         }

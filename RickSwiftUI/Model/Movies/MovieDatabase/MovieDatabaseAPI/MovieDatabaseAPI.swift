@@ -12,7 +12,7 @@ enum MovieDatabaseAPIErrors: Error {
     case noDataOrError
 }
 
-class MovieDatabaseAPI: NetworkAPI, MovieDatabaseProtocol {
+class MovieDatabaseAPI: NetworkAPI {
     typealias APIData = MovieDatabaseSearchResult
 
     var baseUrl: String = "https://movie-database-imdb-alternative.p.rapidapi.com/"
@@ -46,26 +46,5 @@ class MovieDatabaseAPI: NetworkAPI, MovieDatabaseProtocol {
                     completion(.decodingError(error))
             }
         })
-    }
-
-    func search(forMovieWithTitle title: String, completion: @escaping (NetworkResult<MovieDatabaseSearchResult>) -> Void) {
-        let parameters = [URLQueryItem(name: "s", value: title),
-                          URLQueryItem(name: "r", value: "json")]
-        self.get(withParameters: parameters, completion: { apiResult in
-            switch apiResult {
-                case .success(let data):
-                    self.handleSuccessfulSearch(data: data, completion: completion)
-                case .networkError(let error):
-                    completion(.networkError(error))
-                case .serverError(let errorString):
-                    completion(.serverError(errorString))
-                case .decodingError(let error):
-                    completion(.decodingError(error))
-            }
-        })
-    }
-
-    func information(forMovieWithID imdbID: String, completion: @escaping (NetworkResult<MovieInformationResult.Information>) -> Void) {
-        <#code#>
     }
 }

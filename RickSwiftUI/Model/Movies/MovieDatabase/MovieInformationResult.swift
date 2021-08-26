@@ -15,6 +15,8 @@ enum MovieRating {
 }
 
 protocol MovieInformationResult {
+    /// The imdb id for the movie
+    var imdbID: String { get }
     /// The title of the movie
     var title: String { get }
     /// The year the movie was released
@@ -29,4 +31,7 @@ protocol MovieInformationResult {
     var plot: String { get }
     /// The poster url for the movie if one is provided.
     var posterUrl: URL? { get }
+
+    /// Converts the movie information result to a movie using the two needed additional pieces of information
+    func convertToMovie(watched: Bool, streamingPlatforms: [StreamingPlatform]) -> Movie
 }
