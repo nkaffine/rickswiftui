@@ -7,23 +7,21 @@
 
 import SwiftUI
 
-struct MovieCardList<Movie: DisplayableMovie>: View {
+struct MovieCardList<Movie: DisplayableMovieProtocol>: View {
     let movies: [Movie]
+    let watchMovieAction: (String) -> Void
+    let removeMovieAction: (String) -> Void
 
     var body: some View {
         ScrollView(.vertical) {
             LazyVStack(spacing: Constants.movieListVerticalSpacing) {
                 ForEach(movies) { movieDetail in
-                    MovieCard(title: movieDetail.title,
-                              runtime: movieDetail.runtime,
-                              rating: movieDetail.rating,
-                              year: movieDetail.year,
-                              posterURL: movieDetail.posterURL, movieWatchedAction: {
-                        print("\(movieDetail.title) watched")
-                    }, movieDeleteAction: {
-                        print("\(movieDetail.title) deleted")
-                    })
-                        .clipped()
+                    EditableMovieCard(details: movieDetail) {
+                        watchMovieAction(movieDetail.id)
+                    } movieDeleteAction: {
+                        removeMovieAction(movieDetail.id)
+                    }
+                    .clipped()
                 }
             }
         }
@@ -38,8 +36,17 @@ struct MovieCardList_Previews: PreviewProvider {
     static var previews: some View {
         let movies = [MockMovies.endgame,
                       MockMovies.lionKing]
-        let viewModel = MovieListViewModel(movies: movies)
-        MovieCardList(movies: viewModel.movies)
+        let viewModel = MovieListViewModel(movies: movies) { imdbID in
+            print("Watched \(imdbID)")
+        } removeMovieAction: { imdbID in
+            print("Removed \(imdbID)")
+        } addMovieAction: {
+            print("Add movie")
+        }
+
+        MovieCardList(movies: viewModel.movies,
+                      watchMovieAction: viewModel.markMovieWatched,
+                      removeMovieAction: viewModel.removeMovie)
             .preferredColorScheme(.dark)
     }
 }

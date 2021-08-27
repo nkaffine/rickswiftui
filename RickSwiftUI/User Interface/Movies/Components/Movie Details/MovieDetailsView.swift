@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct MovieDetails: View {
+struct MovieDetailsView: View {
     let title: String
     let year: String
     let rating: String
@@ -47,7 +47,7 @@ struct MovieDetails_Previews: PreviewProvider {
     static var previews: some View {
         let movie = MockMovies.endgame
         let runtime = "\(movie.runtimeInMinutes / 60)h \(movie.runtimeInMinutes % 60)m"
-        MovieDetails(title: movie.title,
+        MovieDetailsView(title: movie.title,
                      year: movie.year,
                      rating: rating(from: movie),
                      runtime: runtime,

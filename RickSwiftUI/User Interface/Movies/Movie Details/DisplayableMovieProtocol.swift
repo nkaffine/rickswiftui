@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-protocol DisplayableMovie: Identifiable {
+protocol DisplayableMovieProtocol: Identifiable {
     var id: String { get }
     var title: String { get }
     var year: String { get }

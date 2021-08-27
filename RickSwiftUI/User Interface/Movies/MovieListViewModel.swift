@@ -6,9 +6,76 @@
 //
 
 import Foundation
+import UIKit
 
 class MovieListViewModel: ObservableObject {
-    struct MovieWithGenre: DisplayableMovie {
+    @Published
+    private var allMovies: [MovieWithGenre]
+    private let markMovieWatchedAction: (String) -> Void
+    private let removeMovieAction: (String) -> Void
+    private let addMovieAction: () -> Void
+
+    init(movies: [Movie],
+         markMovieWatchedAction: @escaping (String) -> Void,
+         removeMovieAction: @escaping (String) -> Void,
+         addMovieAction: @escaping () -> Void) {
+        self.allMovies = movies.sorted(by: { $0.title < $1.title }).map({MovieWithGenre(movie: $0)})
+        genres = Set<String>()
+        self.markMovieWatchedAction = markMovieWatchedAction
+        self.removeMovieAction = removeMovieAction
+        self.addMovieAction = addMovieAction
+        movies.forEach { movie in
+            movie.genre.forEach { genre in
+                genres.insert(genre)
+            }
+        }
+    }
+
+    // MARK: Public Vars
+
+    var genres: Set<String>
+
+    @Published
+    var selectedGenre: String?
+
+    var movies: [MovieWithGenre] {
+        guard let currentlySelectedGenre = selectedGenre else {
+            return allMovies
+        }
+        return allMovies.filter { movie in
+            movie.genres.contains(currentlySelectedGenre)
+        }
+    }
+
+    // MARK: Intents
+
+    func selectGenre(genre: String) {
+        guard genres.contains(genre) else {
+            return
+        }
+        if selectedGenre == genre {
+            selectedGenre = nil
+        } else {
+            selectedGenre = genre
+        }
+    }
+
+    func markMovieWatched(imdbID: String) {
+        markMovieWatchedAction(imdbID)
+    }
+
+    func removeMovie(imdbID: String) {
+        removeMovieAction(imdbID)
+    }
+
+    func addMovie() {
+        addMovieAction()
+    }
+}
+
+
+extension MovieListViewModel {
+    struct MovieWithGenre: DisplayableMovieProtocol {
         let id: String
         let title: String
         let year: String
@@ -16,6 +83,8 @@ class MovieListViewModel: ObservableObject {
         let runtime: String
         let posterURL: URL?
         let genres: [String]
+        let plot: String
+        let streamingServices: [UIImage]
 
         private static func image(for streamingService: StreamingPlatform) -> UIImage {
             switch streamingService {
@@ -51,48 +120,6 @@ class MovieListViewModel: ObservableObject {
             streamingServices = movie.availableStreamingPlatforms.map({ streamingService in
                 MovieWithGenre.image(for: streamingService)
             })
-        }
-    }
-
-    @Published
-    private var allMovies: [MovieWithGenre]
-
-    init(movies: [Movie]) {
-        self.allMovies = movies.sorted(by: { $0.title < $1.title }).map({MovieWithGenre(movie: $0)})
-        genres = Set<String>()
-        movies.forEach { movie in
-            movie.genre.forEach { genre in
-                genres.insert(genre)
-            }
-        }
-    }
-
-    // MARK: Public Vars
-
-    var genres: Set<String>
-
-    @Published
-    var selectedGenre: String?
-
-    var movies: [MovieWithGenre] {
-        guard let currentlySelectedGenre = selectedGenre else {
-            return allMovies
-        }
-        return allMovies.filter { movie in
-            movie.genres.contains(currentlySelectedGenre)
-        }
-    }
-
-    // MARK: Intents
-
-    func selectGenre(genre: String) {
-        guard genres.contains(genre) else {
-            return
-        }
-        if selectedGenre == genre {
-            selectedGenre = nil
-        } else {
-            selectedGenre = genre
         }
     }
 }

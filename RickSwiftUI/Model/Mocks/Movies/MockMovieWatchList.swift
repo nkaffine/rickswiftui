@@ -7,35 +7,71 @@
 
 import Foundation
 
-struct MockMovieWatchList: MovieWatchListProtocol {
-    private let watchedMovies: [Movie]
-    private let unwatchedMovies: [Movie]
+class MockMovieWatchList: MovieWatchListProtocol {
+    private var movies: [Movie]
+
+    private var unwatchedMovies: [Movie] {
+        return movies.filter({!$0.hasBeenWatched})
+    }
+
+    private var watchedMovies: [Movie] {
+        return movies.filter({$0.hasBeenWatched})
+    }
 
     init(watchedMovies: [Movie], unwatchedMovies: [Movie]) {
-        self.watchedMovies = watchedMovies
-        self.unwatchedMovies = unwatchedMovies
+        self.movies = watchedMovies + unwatchedMovies
     }
 
-    mutating func addMovie(imdbID: String, completion: @escaping (NetworkResult<Bool>) -> Void) {
-        print("add movie called")
+    func addMovie(imdbID: String, completion: @escaping (NetworkResult<Bool>) -> Void) {
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            let movie = MockMovieDatabaseAPI.endgameInformation.convertToMovie(watched: false, streamingPlatforms: [])
+            self?.movies.append(movie)
+            completion(.success(true))
+        }
     }
 
-    mutating func removeMovie(imdbID: String, completion: @escaping (NetworkResult<Bool>) -> Void) {
-        print("remove movie called")
+    func removeMovie(imdbID: String, completion: @escaping (NetworkResult<Bool>) -> Void) {
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            if let indexToRemove = self?.movies.firstIndex(where: { movie in
+                movie.imdbID == imdbID
+            }) {
+                self?.movies.remove(at: indexToRemove)
+                DispatchQueue.main.async {
+                    completion(.success(true))
+                }
+            } else {
+                DispatchQueue.main.async {
+                    completion(.success(false))
+                }
+            }
+        }
     }
 
-    mutating func markWatched(imdbID: String, completion: @escaping (NetworkResult<Bool>) -> Void) {
-        print("mark watched called")
+    func markWatched(imdbID: String, completion: @escaping (NetworkResult<Bool>) -> Void) {
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            if let indexToMarkWatched = self?.movies.firstIndex(where: { movie in
+                movie.imdbID == imdbID
+            }) {
+                self?.movies[indexToMarkWatched].hasBeenWatched = true
+                DispatchQueue.main.async {
+                    completion(.success(true))
+                }
+            } else {
+                DispatchQueue.main.async {
+                    completion(.success(false))
+                }
+            }
+        }
     }
 
-    mutating func markUnwatched(imdbID: String, completion: @escaping (NetworkResult<Bool>) -> Void) {
+    func markUnwatched(imdbID: String, completion: @escaping (NetworkResult<Bool>) -> Void) {
         print("mark unwatched called")
     }
 
     func fetchUnwatchedMovies(completion: @escaping (NetworkResult<[Movie]>) -> Void) {
-        DispatchQueue.global(qos: .userInitiated).asyncAfter(deadline: .now() + 2) {
+        DispatchQueue.global(qos: .userInitiated).async {
             DispatchQueue.main.async {
-                completion(.success(unwatchedMovies))
+                completion(.success(self.unwatchedMovies))
             }
         }
     }

@@ -16,7 +16,7 @@ struct Movie {
     let genre: [String]
     let plot: String
     let posterUrl: URL?
-    let hasBeenWatched: Bool
+    var hasBeenWatched: Bool
     let availableStreamingPlatforms: [StreamingPlatform]
 }
 

@@ -10,14 +10,27 @@ import SwiftUI
 struct MovieListCoordinator: View {
     @ObservedObject
     var viewModel: MovieListCoordinatorViewModel
+    @State
+    var shouldPresentSheet: Bool = false
 
     @ViewBuilder
     var body: some View {
         VStack {
             title
-            MovieListCoordinatorContent(viewModel: viewModel)
+            MovieListCoordinatorContent(viewModel: viewModel) {
+                shouldPresentSheet = true
+            }
         }
         .padding(16)
+        .sheet(isPresented: $shouldPresentSheet) {
+            shouldPresentSheet = false
+        } content: {
+            AddMovieView { imdbID in
+                viewModel.addMovie(withID: imdbID)
+                shouldPresentSheet = false
+            }
+        }
+
     }
 
     var title: some View {
@@ -31,17 +44,19 @@ struct MovieListCoordinator: View {
 private struct MovieListCoordinatorContent: View {
     @ObservedObject
     var viewModel: MovieListCoordinatorViewModel
+    var addMovieTapAction: () -> Void
 
     var body: some View {
-        if viewModel.isLoading {
-            ProgressView()
-                .frame(maxHeight: .infinity)
-        } else {
-            if viewModel.error == nil {
-                MovieList(viewModel: MovieListViewModel(movies: viewModel.movies))
-            } else {
-                Text(viewModel.error ?? "Something went wrong")
-            }
+        switch viewModel.movies {
+            case .loading:
+                ProgressView()
+                    .frame(maxHeight: .infinity)
+            case .failure:
+                Text("Something went wrong")
+            case .success(let movies):
+                MovieList(viewModel: MovieListViewModel(movies: movies,
+                                                        markMovieWatchedAction: viewModel.markWatched,
+                                                        removeMovieAction: viewModel.deleteMovie, addMovieAction: addMovieTapAction))
         }
     }
 }

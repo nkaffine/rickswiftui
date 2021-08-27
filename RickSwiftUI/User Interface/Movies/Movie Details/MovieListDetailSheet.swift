@@ -1,13 +1,13 @@
 //
-//  MovieDetailSheet.swift
-//  RickSwiftUI
+//  MovieListDetailSheet.swift
+//  MovieListDetailSheet
 //
-//  Created by Nicholas Kaffine on 8/25/21.
+//  Created by Nicholas Kaffine on 8/27/21.
 //
 
 import SwiftUI
 
-struct MovieDetailSheet<MovieDetails: DisplayableMovie>: View {
+struct MovieListDetailSheet<MovieDetails: DisplayableMovieProtocol>: View {
     let details: MovieDetails
     let watchedAction: () -> Void
     let deleteAction: () -> Void
@@ -33,11 +33,11 @@ struct MovieDetailSheet<MovieDetails: DisplayableMovie>: View {
                 VStack(alignment: .leading, spacing: 16) {
                     poster.frame(width: geometry.size.width,
                                  height: geometry.size.width / 0.67)
-//                    MovieDetails(title: details.title,
-//                                 year: details.year,
-//                                 rating: details.rating,
-//                                 runtime: details.runtime,
-//                                 plot: details.plot)
+                    MovieDetailsView(title: details.title,
+                                     year: details.year,
+                                     rating: details.rating,
+                                     runtime: details.runtime,
+                                     plot: details.plot)
                     buttonStack
                 }
             }
@@ -76,7 +76,7 @@ struct MovieDetailSheet<MovieDetails: DisplayableMovie>: View {
     }
 }
 
-struct MovieDetailSheet_Previews: PreviewProvider {
+struct MovieListDetailSheet_Previews: PreviewProvider {
     private static func rating(from movie: Movie) -> String {
         switch movie.rating {
             case .G:
@@ -92,15 +92,9 @@ struct MovieDetailSheet_Previews: PreviewProvider {
 
     static var previews: some View {
         let movie = MockMovies.endgame
-        let runtime = "\(movie.runtimeInMinutes / 60)h \(movie.runtimeInMinutes % 60)m"
+        let movieDetails = DisplayableMovie(movie: movie)
 
-        MovieDetailSheet(posterURL: movie.posterUrl,
-                         streamingServices: [],
-                         title: movie.title,
-                         rating: rating(from: movie),
-                         year: movie.year,
-                         runtime: runtime,
-                         plot: movie.plot, watchedAction: {
+        MovieListDetailSheet(details: movieDetails, watchedAction: {
             print("Watched tapped")
         }, deleteAction: {
             print("delete tapped")

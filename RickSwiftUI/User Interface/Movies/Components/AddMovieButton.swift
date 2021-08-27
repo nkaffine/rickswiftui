@@ -12,14 +12,17 @@ struct AddMovieButton: View {
         Image(systemName: "plus")
             .font(.largeTitle)
             .frame(width: 75, height: 75, alignment: .center)
-            .background(Color(UIColor.secondarySystemFill))
+            .background(Color(UIColor.systemGray6))
             .cornerRadius(50)
+            .contentShape(Circle())
     }
 }
 
 struct AddMovieButton_Previews: PreviewProvider {
     static var previews: some View {
-        AddMovieButton()
+        AddMovieButton().onTapGesture {
+            print("tapped")
+        }
             .preferredColorScheme(.dark)
     }
 }

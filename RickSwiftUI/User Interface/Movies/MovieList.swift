@@ -14,7 +14,9 @@ struct MovieList: View {
     var body: some View {
         ZStack(alignment: .bottomLeading) {
             movieListContent
-            AddMovieButton()
+            AddMovieButton().onTapGesture {
+                viewModel.addMovie()
+            }
         }
     }
 
@@ -39,7 +41,9 @@ struct MovieList: View {
 
     @ViewBuilder
     private var movieList: some View {
-        MovieCardList(movies: viewModel.movies)
+        MovieCardList(movies: viewModel.movies,
+                      watchMovieAction: viewModel.markMovieWatched,
+                      removeMovieAction: viewModel.removeMovie)
     }
 }
 
@@ -47,7 +51,14 @@ struct UnwatchedMoveList_Previews: PreviewProvider {
     static var previews: some View {
         let movies = [MockMovies.endgame,
                       MockMovies.lionKing]
-        let viewModel = MovieListViewModel(movies: movies)
+        let viewModel = MovieListViewModel(movies: movies) { imdbID in
+            print("Mark Watched: \(imdbID)")
+        } removeMovieAction: { imdbID in
+            print("Removed: \(imdbID)")
+        } addMovieAction: {
+            print("add movie tapped")
+        }
+
         MovieList(viewModel: viewModel)
         .preferredColorScheme(.dark)
     }

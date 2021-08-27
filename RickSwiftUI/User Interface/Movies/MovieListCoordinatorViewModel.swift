@@ -7,52 +7,70 @@
 
 import Foundation
 
+
+
 class MovieListCoordinatorViewModel: ObservableObject {
     @Published
-    private var loadableMovies: Loadable<[Movie]>
+    var movies: Loadable<[Movie]>
+
     private var model: MovieWatchListProtocol
 
     init(model: MovieWatchListProtocol) {
         self.model = model
-        self.loadableMovies = .loading
+        self.movies = .loading
+        updateMovies()
+    }
+
+    private func updateMovies() {
         model.fetchUnwatchedMovies(completion: { [weak self] result in
             switch result {
                 case .success(let movies):
-                    self?.loadableMovies = .success(movies)
+                    self?.movies = .success(movies)
                 case .networkError(let error),
                      .serverError(let error),
                      .decodingError(let error):
-                    self?.loadableMovies = .failure(error)
+                    self?.movies = .failure(error)
             }
         })
     }
 
-    // TODO: remove once switches are in view builder (need to update xcode)
-    var movies: [Movie] {
-        switch loadableMovies {
-            case .loading, .failure:
-                return []
-            case .success(let movies):
-                return movies
+    // MARK: Intents
+
+    func markWatched(imdbID: String) {
+        movies = .loading
+        model.markWatched(imdbID: imdbID) { [weak self] result in
+            switch result {
+                case .success:
+                    self?.updateMovies()
+                case .networkError, .serverError, .decodingError:
+                    self?.updateMovies()
+                    print("something went wrong")
+            }
         }
     }
 
-    var isLoading: Bool {
-        switch loadableMovies {
-            case .loading:
-                return true
-            case .success, .failure:
-                return false
+    func deleteMovie(imdbID: String) {
+        movies = .loading
+        model.removeMovie(imdbID: imdbID) { [weak self] result in
+            switch result {
+                case .success:
+                    self?.updateMovies()
+                case .networkError, .serverError, .decodingError:
+                    self?.updateMovies()
+                    print("something went wrong")
+            }
         }
     }
 
-    var error: String? {
-        switch loadableMovies {
-            case .failure(let error):
-                return error.localizedDescription
-            case .success, .loading:
-                return nil
+    func addMovie(withID id: String) {
+        movies = .loading
+        model.addMovie(imdbID: id) { [weak self] result in
+            switch result {
+                case .success:
+                    self?.updateMovies()
+                case .serverError, .networkError, .decodingError:
+                    self?.updateMovies()
+            }
         }
     }
-
 }
