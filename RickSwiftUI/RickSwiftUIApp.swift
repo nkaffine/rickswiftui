@@ -11,11 +11,15 @@ import SwiftUI
 struct RickSwiftUIApp: App {
     var body: some Scene {
         WindowGroup {
+            #if DEBUG
             let model = MockMovieWatchList(watchedMovies: [], unwatchedMovies: [MockMovies.lionKing, MockMovies.endgame])
             let viewModel = MovieListCoordinatorViewModel(model: model)
             MovieListCoordinator(viewModel: viewModel)
-//            MainTabView()
-//            MovieSearchView(viewModel: MovieSearchViewModel())
+            #else
+            let model = MockMovieWatchList(watchedMovies: [], unwatchedMovies: [MockMovies.lionKing, MockMovies.endgame])
+            let viewModel = MovieListCoordinatorViewModel(model: model)
+            MovieListCoordinator(viewModel: viewModel)
+            #endif
         }
     }
 }
