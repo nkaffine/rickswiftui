@@ -63,7 +63,7 @@ private struct MovieListCoordinatorContent: View {
 
 struct MovieListCoordinator_Previews: PreviewProvider {
     static var previews: some View {
-        let model = LocalMovieWatchList()
+        let model = LocalMovieWatchList(movieDatabase: MockMovieDatabase())
         let viewModel = MovieListCoordinatorViewModel(model: model)
         MovieListCoordinator(viewModel: viewModel)
             .preferredColorScheme(.dark)

@@ -13,16 +13,12 @@ enum LocalMovieWatchListErrors: Error {
 }
 
 struct LocalMovieWatchList: MovieWatchListProtocol {
-    private struct WatchListEntry {
-        let imdbID: String
-        var watched: Bool
-
-        mutating func updateWatchStatus(to watched: Bool) {
-            self.watched = watched
-        }
-    }
-
+    let movieDatabase: MovieDatabaseProtocol
     private var movies: [WatchListEntry] = []
+
+    init(movieDatabase: MovieDatabaseProtocol) {
+        self.movieDatabase = movieDatabase
+    }
 
     mutating func addMovie(imdbID: String,
                            completion: @escaping (NetworkResult<Bool>) -> Void) {
@@ -73,7 +69,7 @@ struct LocalMovieWatchList: MovieWatchListProtocol {
             return entry.watched == watched ? entry.imdbID : nil
         }
         let fetcher = MovieInformationFetcher(imdbIDs: movieIds,
-                                              movieDatabase: MockMovieDatabaseAPI()) { movieInformationArray in
+                                              movieDatabase: MockMovieDatabase()) { movieInformationArray in
             let unwatchedMovies: [Movie] = movieInformationArray.compactMap { movieInformation in
                 guard let movieEntry = self.movies.first(where: { entry in
                     entry.imdbID == movieInformation.imdbID
@@ -114,6 +110,18 @@ struct LocalMovieWatchList: MovieWatchListProtocol {
                 default:
                     completion(result)
             }
+        }
+    }
+}
+
+
+extension LocalMovieWatchList {
+    private struct WatchListEntry {
+        let imdbID: String
+        var watched: Bool
+
+        mutating func updateWatchStatus(to watched: Bool) {
+            self.watched = watched
         }
     }
 }

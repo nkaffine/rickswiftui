@@ -10,7 +10,7 @@ import SwiftUI
 struct AddMovieView: View {
     @State var searchText: String = ""
     @ObservedObject
-    private var searcher: AddMovieSearcher = AddMovieSearcher(movieDatabase: MockMovieDatabaseAPI())
+    private var searcher: AddMovieSearcher = AddMovieSearcher(movieDatabase: MockMovieDatabase())
     let addMovieAction: (String) -> Void
 
     var body: some View {

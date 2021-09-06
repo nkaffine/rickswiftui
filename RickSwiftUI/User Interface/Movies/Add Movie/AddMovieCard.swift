@@ -28,7 +28,7 @@ struct AddMovieCard: View {
             shouldPresentSheet = false
         } content: {
             let viewModel = AddMovieDetailsViewModel(imdbID: movie.id,
-                                                     movieDatabase: MockMovieDatabaseAPI())
+                                                     movieDatabase: MockMovieDatabase())
             AddMovieDetailsView(viewModel: viewModel,
                                 isPresented: $shouldPresentSheet) { imdbID in
                 addMovieAction(imdbID)
@@ -40,7 +40,7 @@ struct AddMovieCard: View {
 
 struct AddMovieCard_Previews: PreviewProvider {
     static var previews: some View {
-        AddMovieCard(movie: MockMovieDatabaseAPI.endgameSerchResults[0]) { _ in
+        AddMovieCard(movie: MockMovieDatabase.endgameSerchResults[0]) { _ in
             print("Add movie tapped")
         }.preferredColorScheme(.dark)
     }

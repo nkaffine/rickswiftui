@@ -8,7 +8,7 @@
 import Foundation
 
 class MovieSearchViewModel: ObservableObject {
-    private var searcher: MovieDatabaseAPI = MovieDatabaseAPI()
+//    private var searcher: MovieDatabaseAPI = MovieDatabaseAPI()
 
 //    @Published
 //    private (set) var currentSearch: [MovieDatabaseResult.Movie]?

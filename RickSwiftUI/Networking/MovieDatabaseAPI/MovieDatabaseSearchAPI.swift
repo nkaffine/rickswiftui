@@ -1,23 +1,14 @@
 //
-//  MovieDatabaseAPI.swift
-//  RickSwiftUI
+//  MovieDatabaseSearchAPI.swift
+//  MovieDatabaseSearchAPI
 //
-//  Created by Nicholas Kaffine on 6/21/21.
+//  Created by Nicholas Kaffine on 8/27/21.
 //
 
 import Foundation
 
-enum MovieDatabaseAPIErrors: Error {
-    case unknownError(String)
-    case noDataOrError
-}
-
-class MovieDatabaseAPI: NetworkAPI {
+class MovieDatabaseSearchAPI: MovieDatabaseAPI {
     typealias APIData = MovieDatabaseSearchResult
-
-    var baseUrl: String = "https://movie-database-imdb-alternative.p.rapidapi.com/"
-    var headers: [String: String]? = ["x-rapidapi-key": "9802aa9cc0msh5015fe6656c4e89p1fe776jsn0b8dd7404dd9",
-                                              "x-rapidapi-host": "movie-database-imdb-alternative.p.rapidapi.com"]
 
     private func handleSuccessfulSearch(data: MovieDatabaseSearchResult,
                                         completion: @escaping (NetworkResult<[ MovieDatabaseSearchResult.Movie]>) -> Void) {

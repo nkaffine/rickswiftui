@@ -24,7 +24,7 @@ class MockMovieWatchList: MovieWatchListProtocol {
 
     func addMovie(imdbID: String, completion: @escaping (NetworkResult<Bool>) -> Void) {
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            let movie = MockMovieDatabaseAPI.endgameInformation.convertToMovie(watched: false, streamingPlatforms: [])
+            let movie = MockMovieDatabase.endgameInformation.convertToMovie(watched: false, streamingPlatforms: [])
             self?.movies.append(movie)
             completion(.success(true))
         }

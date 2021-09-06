@@ -44,7 +44,7 @@ struct AddMovieDetailsView: View {
 
 struct AddMovieDetailsView_Previews: PreviewProvider {
     static var previews: some View {
-        AddMovieDetailsView(viewModel: AddMovieDetailsViewModel(imdbID: "", movieDatabase: MockMovieDatabaseAPI()), isPresented: .constant(false)) { movieID in
+        AddMovieDetailsView(viewModel: AddMovieDetailsViewModel(imdbID: "", movieDatabase: MockMovieDatabase()), isPresented: .constant(false)) { movieID in
             print("Movie ID added: \(movieID)")
         }
             .preferredColorScheme(.dark)

@@ -32,16 +32,32 @@ extension NetworkAPI {
         let session = URLSession.shared
         let dataTask = session.dataTask(with: request) { (data, response, error) in
             if let error = error {
-                completion(.networkError(error))
+                DispatchQueue.main.async {
+                    completion(.networkError(error))
+                }
             } else {
                 do {
-                    let result: APIData = try JSONDecoder().decode(APIData.self, from: data!)
-                    completion(.success(result))
+                    if let httpResponse = response as? HTTPURLResponse,
+                       !(200...299).contains(httpResponse.statusCode) {
+                        print("Server responded with code: \(httpResponse.statusCode)")
+                        DispatchQueue.main.async {
+                            completion(.serverError(URLError(.badServerResponse)))
+                        }
+                    } else {
+                        let result: APIData = try JSONDecoder().decode(APIData.self, from: data!)
+                        DispatchQueue.main.async {
+                            completion(.success(result))
+                        }
+                    }
                 } catch let error {
-                    completion(.decodingError(error))
+                    DispatchQueue.main.async {
+                        completion(.decodingError(error))
+                    }
                 }
             }
         }
-        dataTask.resume()
+        DispatchQueue.global(qos: .userInitiated).async {
+            dataTask.resume()
+        }
     }
 }

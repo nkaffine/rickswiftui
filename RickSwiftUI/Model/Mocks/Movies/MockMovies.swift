@@ -9,7 +9,7 @@ import Foundation
 
 struct MockMovies {
     static let endgame: Movie =
-        MockMovieDatabaseAPI.endgameInformation.convertToMovie(watched: false,
+        MockMovieDatabase.endgameInformation.convertToMovie(watched: false,
                                                                streamingPlatforms: [])
     static let lionKing: Movie =
         MockMovieInformationResult.lionKing.convertToMovie(watched: false,

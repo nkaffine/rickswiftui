@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct MockMovieDatabaseAPI: MovieDatabaseProtocol {
+struct MockMovieDatabase: MovieDatabaseProtocol {
     static let endgameInformation: MovieInformationResult =
         MockMovieInformationResult(imdbID: "tt4154796",
                                    title: "Avengers: Endgame",

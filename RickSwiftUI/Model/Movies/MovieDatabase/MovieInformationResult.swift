@@ -31,7 +31,20 @@ protocol MovieInformationResult {
     var plot: String { get }
     /// The poster url for the movie if one is provided.
     var posterUrl: URL? { get }
+}
 
+extension MovieInformationResult {
     /// Converts the movie information result to a movie using the two needed additional pieces of information
-    func convertToMovie(watched: Bool, streamingPlatforms: [StreamingPlatform]) -> Movie
+    func convertToMovie(watched: Bool, streamingPlatforms: [StreamingPlatform]) -> Movie {
+        return Movie(imdbID: imdbID,
+                     title: title,
+                     year: year,
+                     rating: rating,
+                     runtimeInMinutes: runtimeInMinutes,
+                     genre: genre,
+                     plot: plot,
+                     posterUrl: posterUrl,
+                     hasBeenWatched: watched,
+                     availableStreamingPlatforms: streamingPlatforms)
+    }
 }
