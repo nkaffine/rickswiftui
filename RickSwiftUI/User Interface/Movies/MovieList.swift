@@ -42,8 +42,8 @@ struct MovieList: View {
     @ViewBuilder
     private var movieList: some View {
         MovieCardList(movies: viewModel.movies,
-                      watchMovieAction: viewModel.markMovieWatched,
-                      removeMovieAction: viewModel.removeMovie)
+                      watchMovieAction: viewModel.markWatched,
+                      removeMovieAction: viewModel.remove)
     }
 }
 

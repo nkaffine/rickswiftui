@@ -12,7 +12,7 @@ struct AddMovieDetailsView: View {
     var viewModel: AddMovieDetailsViewModel
     @Binding
     var isPresented: Bool
-    let addMovieAction: (String) -> Void
+    let addMovieAction: (Movie) -> Void
 
     var body: some View {
         switch viewModel.movieDetails {
@@ -28,8 +28,21 @@ struct AddMovieDetailsView: View {
                 } buttons: {
                     HStack(spacing: 16) {
                         StylizedButton(title: "Add", style: .primary) {
-                            addMovieAction(displayableMovie.id)
-                            isPresented = false
+                            if let rating = MovieRating(rating: displayableMovie.rating),
+                                let runtime = RuntimeParser.parseRuntimeInMinutes(from: displayableMovie.runtime) {
+                                let movie = Movie(imdbID: displayableMovie.id,
+                                                  title: displayableMovie.title,
+                                                  year: displayableMovie.year,
+                                                  rating:  rating,
+                                                  runtimeInMinutes: runtime,
+                                                  genre: displayableMovie.genres,
+                                                  plot: displayableMovie.plot,
+                                                  posterUrl: displayableMovie.posterURL,
+                                                  hasBeenWatched: false,
+                                                  availableStreamingPlatforms: [])
+                                addMovieAction(movie)
+                                isPresented = false
+                            }
                         }
                         StylizedButton(title: "Cancel", style: .secondary) {
                             isPresented = false

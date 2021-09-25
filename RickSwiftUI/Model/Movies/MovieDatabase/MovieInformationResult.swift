@@ -12,6 +12,21 @@ enum MovieRating {
     case PG
     case PG13
     case R
+
+    init?(rating: String) {
+        switch rating {
+            case "G":
+                self = .G
+            case "PG":
+                self = .PG
+            case "PG-13":
+                self = .PG13
+            case "R":
+                self = .R
+            default:
+                return nil
+        }
+    }
 }
 
 protocol MovieInformationResult {

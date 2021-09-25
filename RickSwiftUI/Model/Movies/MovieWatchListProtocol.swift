@@ -7,19 +7,6 @@
 
 import Foundation
 
-struct Movie {
-    let imdbID: String
-    let title: String
-    let year: String
-    let rating: MovieRating
-    let runtimeInMinutes: Int
-    let genre: [String]
-    let plot: String
-    let posterUrl: URL?
-    var hasBeenWatched: Bool
-    let availableStreamingPlatforms: [StreamingPlatform]
-}
-
 protocol MovieWatchListProtocol {
     // MARK: List Editing
 

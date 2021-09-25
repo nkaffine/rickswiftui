@@ -7,54 +7,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "1593DFF5-D65A-4A3D-BF36-0857FA305C29"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "RickSwiftUI/User Interface/Movies/MovieListCoordinatorViewModel.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "41"
-            endingLineNumber = "41"
-            landmarkName = "markWatched(imdbID:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "1593DFF5-D65A-4A3D-BF36-0857FA305C29 - 69d5c7b574798a4e"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "RickSwiftUI.MovieListCoordinatorViewModel.markWatched(imdbID: Swift.String) -&gt; ()"
-                  moduleName = "RickSwiftUI"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nkaffine/Documents/Developer/Rick-Dev/RickSwiftUI/RickSwiftUI/User%20Interface/Movies/MovieListCoordinatorViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "41"
-                  endingLineNumber = "41"
-                  offsetFromSymbolStart = "125">
-               </Location>
-               <Location
-                  uuid = "1593DFF5-D65A-4A3D-BF36-0857FA305C29 - f2097d0567a60063"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (RickSwiftUI.NetworkResult&lt;Swift.Bool&gt;) -&gt; () in RickSwiftUI.MovieListCoordinatorViewModel.markWatched(imdbID: Swift.String) -&gt; ()"
-                  moduleName = "RickSwiftUI"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/nkaffine/Documents/Developer/Rick-Dev/RickSwiftUI/RickSwiftUI/User%20Interface/Movies/MovieListCoordinatorViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "41"
-                  endingLineNumber = "41"
-                  offsetFromSymbolStart = "47">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "2A32FACE-8347-47F9-A6CF-AD9E2FC63371"
             shouldBeEnabled = "No"
             ignoreCount = "0"

@@ -8,37 +8,36 @@
 import Foundation
 
 
-
-class MovieListCoordinatorViewModel: ObservableObject {
+class MovieListCoordinatorViewModel<List: WatchListProtocol>: ObservableObject where List.Element == Movie {
     @Published
     var movies: Loadable<[Movie]>
 
-    private var model: MovieWatchListProtocol
+    private var model: List
 
-    init(model: MovieWatchListProtocol) {
+    init(model: List) {
         self.model = model
         self.movies = .loading
         updateMovies()
     }
 
     private func updateMovies() {
-        model.fetchUnwatchedMovies(completion: { [weak self] result in
+        model.fetchWatched { [weak self] result in
             switch result {
                 case .success(let movies):
                     self?.movies = .success(movies)
                 case .networkError(let error),
-                     .serverError(let error),
-                     .decodingError(let error):
+                        .serverError(let error),
+                        .decodingError(let error):
                     self?.movies = .failure(error)
             }
-        })
+        }
     }
 
     // MARK: Intents
 
-    func markWatched(imdbID: String) {
+    func markWatched(movie: Movie) {
         movies = .loading
-        model.markWatched(imdbID: imdbID) { [weak self] result in
+        model.markWatched(element: movie) { [weak self] result in
             switch result {
                 case .success:
                     self?.updateMovies()
@@ -49,9 +48,9 @@ class MovieListCoordinatorViewModel: ObservableObject {
         }
     }
 
-    func deleteMovie(imdbID: String) {
+    func delete(movie: Movie) {
         movies = .loading
-        model.removeMovie(imdbID: imdbID) { [weak self] result in
+        model.remove(element: movie) { [weak self] result in
             switch result {
                 case .success:
                     self?.updateMovies()
@@ -62,9 +61,9 @@ class MovieListCoordinatorViewModel: ObservableObject {
         }
     }
 
-    func addMovie(withID id: String) {
+    func add(movie: Movie) {
         movies = .loading
-        model.addMovie(imdbID: id) { [weak self] result in
+        model.add(element: movie) { [weak self] result in
             switch result {
                 case .success:
                     self?.updateMovies()

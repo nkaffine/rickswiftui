@@ -10,7 +10,7 @@ import SwiftUI
 struct AddMovieCard: View {
     let movie: MovieSearchResult
     @State var shouldPresentSheet: Bool = false
-    let addMovieAction: (String) -> Void
+    let addMovieAction: (Movie) -> Void
 
     var body: some View {
         MovieCard(posterURL: movie.posterUrl) {

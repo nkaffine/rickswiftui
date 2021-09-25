@@ -22,7 +22,8 @@ protocol NetworkAPI {
 }
 
 extension NetworkAPI {
-    func get(withParameters parameters: [URLQueryItem]?, completion: @escaping (NetworkResult<APIData>) -> ()) {
+    func get(withParameters parameters: [URLQueryItem]?,
+             completion: @escaping (NetworkResult<APIData>) -> ()) {
         var url = URLComponents(string: baseUrl)!
         url.queryItems = parameters
         var request = URLRequest(url: url.url!)

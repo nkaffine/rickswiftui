@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct MovieListCoordinator: View {
+struct MovieListCoordinator<List: WatchListProtocol>: View where List.Element == Movie {
     @ObservedObject
-    var viewModel: MovieListCoordinatorViewModel
+    var viewModel: MovieListCoordinatorViewModel<List>
     @State
     var shouldPresentSheet: Bool = false
 
@@ -25,8 +25,8 @@ struct MovieListCoordinator: View {
         .sheet(isPresented: $shouldPresentSheet) {
             shouldPresentSheet = false
         } content: {
-            AddMovieView { imdbID in
-                viewModel.addMovie(withID: imdbID)
+            AddMovieView { movie in
+                viewModel.add(movie: movie)
                 shouldPresentSheet = false
             }
         }
@@ -41,9 +41,9 @@ struct MovieListCoordinator: View {
     }
 }
 
-private struct MovieListCoordinatorContent: View {
+private struct MovieListCoordinatorContent<List: WatchListProtocol>: View where List.Element == Movie {
     @ObservedObject
-    var viewModel: MovieListCoordinatorViewModel
+    var viewModel: MovieListCoordinatorViewModel<List>
     var addMovieTapAction: () -> Void
 
     var body: some View {
@@ -56,14 +56,15 @@ private struct MovieListCoordinatorContent: View {
             case .success(let movies):
                 MovieList(viewModel: MovieListViewModel(movies: movies,
                                                         markMovieWatchedAction: viewModel.markWatched,
-                                                        removeMovieAction: viewModel.deleteMovie, addMovieAction: addMovieTapAction))
+                                                        removeMovieAction: viewModel.delete,
+                                                        addMovieAction: addMovieTapAction))
         }
     }
 }
 
 struct MovieListCoordinator_Previews: PreviewProvider {
     static var previews: some View {
-        let model = LocalMovieWatchList(movieDatabase: MockMovieDatabase())
+        let model = LocalMovieWatchList(movieFetcher: MockMovieInformationFetcher())
         let viewModel = MovieListCoordinatorViewModel(model: model)
         MovieListCoordinator(viewModel: viewModel)
             .preferredColorScheme(.dark)

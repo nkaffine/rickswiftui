@@ -12,116 +12,78 @@ enum LocalMovieWatchListErrors: Error {
     case movieNotFound
 }
 
-struct LocalMovieWatchList: MovieWatchListProtocol {
-    let movieDatabase: MovieDatabaseProtocol
-    private var movies: [WatchListEntry] = []
+struct LocalMovieWatchList: WatchListProtocol {
+    typealias Element = Movie
 
-    init(movieDatabase: MovieDatabaseProtocol) {
-        self.movieDatabase = movieDatabase
+    private var idWatchList = WatchList<String>()
+    private var movieFetcher: MovieInformationFetcherProtocol
+
+    init(movieFetcher: MovieInformationFetcherProtocol) {
+        self.movieFetcher = movieFetcher
     }
 
-    mutating func addMovie(imdbID: String,
-                           completion: @escaping (NetworkResult<Bool>) -> Void) {
-        if movies.first(where: { entry in
-                entry.imdbID == imdbID
-        }) == nil {
-            movies.append(WatchListEntry(imdbID: imdbID, watched: false))
-            completion(.success(true))
-        } else {
-            completion(.serverError(LocalMovieWatchListErrors.movieAlreadyAdded))
+    mutating func add(element: Movie, completion: @escaping (NetworkResult<Bool>) -> Void) {
+        idWatchList.add(element: element.imdbID,
+                       completion: completion)
+    }
+
+    mutating func remove(element: Movie, completion: @escaping (NetworkResult<Bool>) -> Void) {
+        idWatchList.remove(element: element.imdbID,
+                          completion: completion)
+    }
+
+    mutating func markWatched(element: Movie, completion: @escaping (NetworkResult<Bool>) -> Void) {
+        idWatchList.markWatched(element: element.imdbID,
+                    completion: completion)
+    }
+
+    mutating func markUnwatched(element: Movie, completion: @escaping (NetworkResult<Bool>) -> Void) {
+        idWatchList.markWatched(element: element.imdbID,
+                                completion: completion)
+    }
+
+    func fetchUnwatched(completion: @escaping (NetworkResult<[Movie]>) -> Void) {
+        idWatchList.fetchUnwatched { [self] result in
+            self.convert(watchStatus: false,
+                         result: result,
+                         completion: completion)
         }
     }
 
-    mutating func removeMovie(imdbID: String, completion: @escaping (NetworkResult<Bool>) -> Void) {
-        if let indexToRemove = movies.firstIndex(where: { entry in
-            entry.imdbID == imdbID
-        }) {
-            movies.remove(at: indexToRemove)
-        }
-        completion(.success(true))
-    }
-
-    mutating private func updateWatchStatus(to watched: Bool,
-                                            forMovieWithImdbID imdbID: String,
-                                            completion: @escaping (NetworkResult<Bool>) -> Void) {
-        if let indexToUpdate = movies.firstIndex(where: { entry in
-            entry.imdbID == imdbID
-        }) {
-            movies[indexToUpdate].watched = watched
-            completion(.success(true))
-        } else {
-            completion(.serverError(LocalMovieWatchListErrors.movieNotFound))
+    func fetchWatched(completion: @escaping (NetworkResult<[Movie]>) -> Void) {
+        idWatchList.fetchWatched { [self] result in
+            self.convert(watchStatus: true,
+                         result: result,
+                         completion: completion)
         }
     }
 
-    mutating func markWatched(imdbID: String, completion: @escaping (NetworkResult<Bool>) -> Void) {
-        updateWatchStatus(to: true, forMovieWithImdbID: imdbID, completion: completion)
-    }
-
-    mutating func markUnwatched(imdbID: String, completion: @escaping (NetworkResult<Bool>) -> Void) {
-        updateWatchStatus(to: false, forMovieWithImdbID: imdbID, completion: completion)
-    }
-
-
-    private func fetchMovies(watched: Bool,
-                             completion: @escaping (NetworkResult<[Movie]>) -> Void) {
-        let movieIds = movies.compactMap { entry in
-            return entry.watched == watched ? entry.imdbID : nil
-        }
-        let fetcher = MovieInformationFetcher(imdbIDs: movieIds,
-                                              movieDatabase: MockMovieDatabase()) { movieInformationArray in
-            let unwatchedMovies: [Movie] = movieInformationArray.compactMap { movieInformation in
-                guard let movieEntry = self.movies.first(where: { entry in
-                    entry.imdbID == movieInformation.imdbID
-                }) else {
-                    return nil
+    private func convert(watchStatus: Bool,
+                         result: NetworkResult<[String]>,
+                         completion: @escaping (NetworkResult<[Movie]>) -> Void) {
+        switch result {
+            case .success(let ids):
+                fetchMovieInformation(for: ids) { movieInformationArray in
+                    let movies = movieInformationArray.map { movieInfomation in
+                        movieInfomation.convertToMovie(watched: watchStatus,
+                                                       streamingPlatforms: [])
+                    }
+                    completion(.success(movies))
                 }
-                return Movie(imdbID: movieInformation.imdbID,
-                             title: movieInformation.title,
-                             year: movieInformation.year,
-                             rating: movieInformation.rating,
-                             runtimeInMinutes: movieInformation.runtimeInMinutes,
-                             genre: movieInformation.genre,
-                             plot: movieInformation.plot,
-                             posterUrl: movieInformation.posterUrl,
-                             hasBeenWatched: movieEntry.watched,
-                             availableStreamingPlatforms: [])
-            }
-            completion(.success(unwatchedMovies))
+            case .serverError(let error):
+                completion(.serverError(error))
+            case .networkError(let error):
+                completion(.networkError(error))
+            case .decodingError(let error):
+                completion(.decodingError(error))
         }
+    }
+
+    private func fetchMovieInformation(for movies: [String],
+                                       completion: @escaping ([MovieInformationResult]) -> Void) {
+        let fetcher = BatchMovieFetcher(imdbIDs: movies,
+                                        movieFetcher: movieFetcher,
+                                        completion: completion)
         fetcher.startFetching()
-    }
-
-    func fetchUnwatchedMovies(completion: @escaping (NetworkResult<[Movie]>) -> Void) {
-        fetchMovies(watched: false, completion: completion)
-    }
-
-    func fetchWatchedMovies(completion: @escaping (NetworkResult<[Movie]>) -> Void) {
-        fetchMovies(watched: true, completion: completion)
-    }
-
-    func fetchUnwatchedMovies(with genre: String, completion: @escaping (NetworkResult<[Movie]>) -> Void) {
-        fetchMovies(watched: false) { result in
-            switch result {
-                case .success(let movies):
-                    completion(.success(movies.filter({ movie in
-                        movie.genre.contains(genre)
-                    })))
-                default:
-                    completion(result)
-            }
-        }
-    }
-}
-
-
-extension LocalMovieWatchList {
-    private struct WatchListEntry {
-        let imdbID: String
-        var watched: Bool
-
-        mutating func updateWatchStatus(to watched: Bool) {
-            self.watched = watched
-        }
     }
 }

@@ -12,9 +12,9 @@ struct RickSwiftUIApp: App {
     var body: some Scene {
         WindowGroup {
             #if DEBUG
-            let model = LocalMovieWatchList(movieDatabase: MockMovieDatabase())
+            let model = LocalMovieWatchList(movieFetcher: MockMovieInformationFetcher())
             #else
-            let model = LocalMovieWatchList(movieDatabase: MovieDatabase())
+            let model = LocalMovieWatchList(movieFetcher: MovieInformationFetcher())
             #endif
             let viewModel = MovieListCoordinatorViewModel(model: model)
             MovieListCoordinator(viewModel: viewModel)

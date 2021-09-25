@@ -7,19 +7,44 @@
 
 import SwiftUI
 
-struct MovieCardList<Movie: DisplayableMovieProtocol>: View {
-    let movies: [Movie]
-    let watchMovieAction: (String) -> Void
-    let removeMovieAction: (String) -> Void
+struct MovieCardList<DisplayableMovie: DisplayableMovieProtocol>: View {
+    let movies: [DisplayableMovie]
+    let watchMovieAction: (Movie) -> Void
+    let removeMovieAction: (Movie) -> Void
 
     var body: some View {
         ScrollView(.vertical) {
             LazyVStack(spacing: Constants.movieListVerticalSpacing) {
                 ForEach(movies) { movieDetail in
                     EditableMovieCard(details: movieDetail) {
-                        watchMovieAction(movieDetail.id)
+                        if let rating = MovieRating(rating: movieDetail.rating),
+                           let runtime = RuntimeParser.parseRuntimeInMinutes(from: movieDetail.runtime) {
+                            let movie = Movie(imdbID: movieDetail.id,
+                                              title: movieDetail.title,
+                                              year: movieDetail.year,
+                                              rating: rating,
+                                              runtimeInMinutes: runtime,
+                                              genre: [],
+                                              plot: movieDetail.plot,
+                                              posterUrl: movieDetail.posterURL,
+                                              hasBeenWatched: false,
+                                              availableStreamingPlatforms: [])
+                            watchMovieAction(movie)
+                        }
                     } movieDeleteAction: {
-                        removeMovieAction(movieDetail.id)
+                        if let rating = MovieRating(rating: movieDetail.rating),
+                           let runtime = RuntimeParser.parseRuntimeInMinutes(from: movieDetail.runtime) {
+                            removeMovieAction(Movie(imdbID: movieDetail.id,
+                                                    title: movieDetail.title,
+                                                    year: movieDetail.year,
+                                                    rating: rating,
+                                                    runtimeInMinutes: runtime,
+                                                    genre: [],
+                                                    plot: movieDetail.plot,
+                                                    posterUrl: movieDetail.posterURL,
+                                                    hasBeenWatched: false,
+                                                    availableStreamingPlatforms: []))
+                        }
                     }
                     .clipped()
                 }
@@ -45,8 +70,8 @@ struct MovieCardList_Previews: PreviewProvider {
         }
 
         MovieCardList(movies: viewModel.movies,
-                      watchMovieAction: viewModel.markMovieWatched,
-                      removeMovieAction: viewModel.removeMovie)
+                      watchMovieAction: viewModel.markWatched,
+                      removeMovieAction: viewModel.remove)
             .preferredColorScheme(.dark)
     }
 }

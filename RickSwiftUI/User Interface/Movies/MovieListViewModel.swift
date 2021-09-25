@@ -11,13 +11,13 @@ import UIKit
 class MovieListViewModel: ObservableObject {
     @Published
     private var allMovies: [MovieWithGenre]
-    private let markMovieWatchedAction: (String) -> Void
-    private let removeMovieAction: (String) -> Void
+    private let markMovieWatchedAction: (Movie) -> Void
+    private let removeMovieAction: (Movie) -> Void
     private let addMovieAction: () -> Void
 
     init(movies: [Movie],
-         markMovieWatchedAction: @escaping (String) -> Void,
-         removeMovieAction: @escaping (String) -> Void,
+         markMovieWatchedAction: @escaping (Movie) -> Void,
+         removeMovieAction: @escaping (Movie) -> Void,
          addMovieAction: @escaping () -> Void) {
         self.allMovies = movies.sorted(by: { $0.title < $1.title }).map({MovieWithGenre(movie: $0)})
         genres = Set<String>()
@@ -60,12 +60,12 @@ class MovieListViewModel: ObservableObject {
         }
     }
 
-    func markMovieWatched(imdbID: String) {
-        markMovieWatchedAction(imdbID)
+    func markWatched(movie: Movie) {
+        markMovieWatchedAction(movie)
     }
 
-    func removeMovie(imdbID: String) {
-        removeMovieAction(imdbID)
+    func remove(movie: Movie) {
+        removeMovieAction(movie)
     }
 
     func addMovie() {
