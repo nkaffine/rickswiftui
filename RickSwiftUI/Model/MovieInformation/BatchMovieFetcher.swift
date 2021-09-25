@@ -39,11 +39,11 @@ class BatchMovieFetcher {
             self.completion([])
         } else {
             idsToFetch.forEach { imdbID in
-                movieFetcher.fetch(movieWithID: imdbID) { [weak self] result in
-                    self?.fetchedDataLock.lock()
-                    self?.fetchedData.append(result)
-                    self?.callCompletionIfFinished()
-                    self?.fetchedDataLock.unlock()
+                movieFetcher.fetch(movieWithID: imdbID) { [self] result in
+                    self.fetchedDataLock.lock()
+                    self.fetchedData.append(result)
+                    self.callCompletionIfFinished()
+                    self.fetchedDataLock.unlock()
                 }
             }
         }

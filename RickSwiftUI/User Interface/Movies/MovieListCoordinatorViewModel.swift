@@ -7,8 +7,11 @@
 
 import Foundation
 
+protocol MovieAddable: AnyObject {
+    func add(movie: Movie)
+}
 
-class MovieListCoordinatorViewModel<List: WatchListProtocol>: ObservableObject where List.Element == Movie {
+class MovieListCoordinatorViewModel<List: WatchListProtocol>: ObservableObject, MovieAddable where List.Element == Movie {
     @Published
     var movies: Loadable<[Movie]>
 
@@ -21,7 +24,7 @@ class MovieListCoordinatorViewModel<List: WatchListProtocol>: ObservableObject w
     }
 
     private func updateMovies() {
-        model.fetchWatched { [weak self] result in
+        model.fetchUnwatched { [weak self] result in
             switch result {
                 case .success(let movies):
                     self?.movies = .success(movies)

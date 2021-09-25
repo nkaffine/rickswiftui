@@ -54,10 +54,11 @@ private struct MovieListCoordinatorContent<List: WatchListProtocol>: View where 
             case .failure:
                 Text("Something went wrong")
             case .success(let movies):
-                MovieList(viewModel: MovieListViewModel(movies: movies,
-                                                        markMovieWatchedAction: viewModel.markWatched,
-                                                        removeMovieAction: viewModel.delete,
-                                                        addMovieAction: addMovieTapAction))
+                Text("Success")
+//                MovieList(viewModel: MovieListViewModel(movies: movies,
+//                                                        markMovieWatchedAction: viewModel.markWatched,
+//                                                        removeMovieAction: viewModel.delete,
+//                                                        addMovieAction: addMovieTapAction))
         }
     }
 }

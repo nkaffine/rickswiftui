@@ -15,11 +15,17 @@ enum LocalMovieWatchListErrors: Error {
 struct LocalMovieWatchList: WatchListProtocol {
     typealias Element = Movie
 
-    private var idWatchList = WatchList<String>()
+    private var idWatchList: WatchList<String>
     private var movieFetcher: MovieInformationFetcherProtocol
 
     init(movieFetcher: MovieInformationFetcherProtocol) {
         self.movieFetcher = movieFetcher
+        self.idWatchList = WatchList<String>()
+    }
+
+    init(movieIds: [String], movieFetcher: MovieInformationFetcherProtocol) {
+        self.movieFetcher = movieFetcher
+        self.idWatchList = WatchList<String>(elements: movieIds)
     }
 
     mutating func add(element: Movie, completion: @escaping (NetworkResult<Bool>) -> Void) {

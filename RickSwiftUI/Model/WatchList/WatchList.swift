@@ -17,16 +17,21 @@ struct WatchList<Element: Equatable>: WatchListProtocol {
         }
     }
 
+    private var itemsLock = NSLock()
     private var items: [Item]
 
     init() {
         items = []
     }
 
+    init(elements: [Element]) {
+        self.items = elements.map({Item(element: $0, watched: false)})
+    }
+
     /// Returns the item matching the given id if one exists
     /// - Parameter id: the id to match against
     private func item(matching element: Element) -> Item? {
-        return items.first { item in
+        items.first { item in
             item.element == element
         }
     }
@@ -45,51 +50,78 @@ struct WatchList<Element: Equatable>: WatchListProtocol {
 
     mutating func add(element: Element,
                       completion: @escaping (NetworkResult<Bool>) -> Void) {
+        itemsLock.lock()
         if item(matching: element) == nil {
             items.append(Item(element: element, watched: false))
         }
-        completion(.success(true))
+        itemsLock.unlock()
+        DispatchQueue.global(qos: .userInitiated).async {
+            completion(.success(true))
+        }
     }
 
     mutating func remove(element: Element,
                          completion: @escaping (NetworkResult<Bool>) -> Void) {
+        itemsLock.lock()
         if let index = index(matching: element) {
             items.remove(at: index)
         }
-        completion(.success(true))
+        itemsLock.unlock()
+        DispatchQueue.global(qos: .userInitiated).async {
+            completion(.success(true))
+        }
     }
 
     mutating func markWatched(element: Element,
                               completion: @escaping (NetworkResult<Bool>) -> Void) {
+        itemsLock.lock()
         guard var item = item(matching: element) else {
             completion(.success(false))
             return
         }
+        itemsLock.unlock()
         item.setWatchStatus(to: true)
-        completion(.success(true))
+        DispatchQueue.global(qos: .userInitiated).async {
+            completion(.success(true))
+        }
     }
 
     mutating func markUnwatched(element: Element,
                                 completion: @escaping (NetworkResult<Bool>) -> Void) {
+        itemsLock.lock()
         guard var item = item(matching: element) else {
             completion(.success(false))
             return
         }
         item.setWatchStatus(to: false)
-        completion(.success(true))
+        itemsLock.unlock()
+        DispatchQueue.global(qos: .userInitiated).async {
+            completion(.success(true))
+        }
     }
 
     func fetchUnwatched(completion: @escaping (NetworkResult<[Element]>) -> Void) {
+        itemsLock.lock()
         let unwatched = items(withWatchStatus: false)
-        completion(.success(unwatched.map({$0.element})))
+        let unwatchedElements = unwatched.map({$0.element})
+        itemsLock.unlock()
+        DispatchQueue.global(qos: .userInitiated).async {
+            completion(.success(unwatchedElements))
+        }
     }
 
     func fetchWatched(completion: @escaping (NetworkResult<[Element]>) -> Void) {
+        itemsLock.lock()
         let watched = items(withWatchStatus: true)
-        completion(.success(watched.map({$0.element})))
+        itemsLock.unlock()
+        DispatchQueue.global(qos: .userInitiated).async {
+            completion(.success(watched.map({$0.element})))
+        }
     }
 
     func fetchAll(completion: @escaping (NetworkResult<[Item]>) -> Void) {
-        completion(.success(items))
+        DispatchQueue.global(qos: .userInitiated).async {
+            completion(.success(items))
+        }
     }
 }
