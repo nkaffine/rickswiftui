@@ -28,14 +28,16 @@ struct WatchList<Element: Equatable>: WatchListProtocol {
         self.items = elements.map({Item(element: $0, watched: false)})
     }
 
-    /// Returns the item matching the given id if one exists
-    /// - Parameter id: the id to match against
+    /// Returns the item matching the given element if one exists
+    /// - Parameter element: the id to match against
     private func item(matching element: Element) -> Item? {
         items.first { item in
             item.element == element
         }
     }
 
+    /// Returns the index of the item matching the given element if one exissts
+    /// - Parameter element: the element to match against
     private func index(matching element: Element) -> Array<Item>.Index? {
         return items.firstIndex { item in
             item.element == element
@@ -75,12 +77,12 @@ struct WatchList<Element: Equatable>: WatchListProtocol {
     mutating func markWatched(element: Element,
                               completion: @escaping (NetworkResult<Bool>) -> Void) {
         itemsLock.lock()
-        guard var item = item(matching: element) else {
+        guard var index = index(matching: element) else {
             completion(.success(false))
             return
         }
+        items[index].setWatchStatus(to: true)
         itemsLock.unlock()
-        item.setWatchStatus(to: true)
         DispatchQueue.global(qos: .userInitiated).async {
             completion(.success(true))
         }
@@ -89,11 +91,11 @@ struct WatchList<Element: Equatable>: WatchListProtocol {
     mutating func markUnwatched(element: Element,
                                 completion: @escaping (NetworkResult<Bool>) -> Void) {
         itemsLock.lock()
-        guard var item = item(matching: element) else {
+        guard var index = index(matching: element) else {
             completion(.success(false))
             return
         }
-        item.setWatchStatus(to: false)
+        items[index].setWatchStatus(to: false)
         itemsLock.unlock()
         DispatchQueue.global(qos: .userInitiated).async {
             completion(.success(true))

@@ -12,20 +12,15 @@ enum LocalMovieWatchListErrors: Error {
     case movieNotFound
 }
 
-struct LocalMovieWatchList: WatchListProtocol {
+struct MovieWatchList<IDWatchList: WatchListProtocol>: WatchListProtocol where IDWatchList.Element == String {
     typealias Element = Movie
 
-    private var idWatchList: WatchList<String>
+    private var idWatchList: IDWatchList
     private var movieFetcher: MovieInformationFetcherProtocol
 
-    init(movieFetcher: MovieInformationFetcherProtocol) {
+    init(movieFetcher: MovieInformationFetcherProtocol, idWatchList: IDWatchList) {
         self.movieFetcher = movieFetcher
-        self.idWatchList = WatchList<String>()
-    }
-
-    init(movieIds: [String], movieFetcher: MovieInformationFetcherProtocol) {
-        self.movieFetcher = movieFetcher
-        self.idWatchList = WatchList<String>(elements: movieIds)
+        self.idWatchList = idWatchList
     }
 
     mutating func add(element: Movie, completion: @escaping (NetworkResult<Bool>) -> Void) {

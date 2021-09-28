@@ -13,8 +13,9 @@ struct RickSwiftUIApp: App {
         WindowGroup {
             #if DEBUG
 //            let model = LocalMovieWatchList(movieFetcher: MockMovieInformationFetcher())
-            let model = LocalMovieWatchList(movieIds: ["tt4154796", "tt0110357", "tt2582802", "tt0338013", "tt0485947"],
-                                            movieFetcher: MovieInformationFetcher())
+            let watchList = WatchList<String>(elements: ["tt4154796", "tt0110357", "tt2582802", "tt0338013", "tt0485947"])
+            let model = MovieWatchList(movieFetcher: MovieInformationFetcher(),
+                                       idWatchList: watchList)
             #else
             let model = LocalMovieWatchList(movieFetcher: MovieInformationFetcher())
             #endif

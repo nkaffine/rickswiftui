@@ -27,8 +27,9 @@ struct MovieWatchListView<List: WatchListProtocol>: View where List.Element == M
 
 struct MovieWatchListView_Previews: PreviewProvider {
     static var previews: some View {
-        let model = LocalMovieWatchList(movieIds: ["tt4154796", "tt0110357", "tt2582802", "tt0338013", "tt0485947"],
-                                        movieFetcher: MovieInformationFetcher())
+        let watchList = WatchList<String>(elements: ["tt4154796", "tt0110357", "tt2582802", "tt0338013", "tt0485947"])
+        let model = MovieWatchList(movieFetcher: MovieInformationFetcher(),
+                                   idWatchList: watchList)
         MovieWatchListView(viewModel: MovieWatchListViewModel(model: model))
             .preferredColorScheme(.dark)
     }
