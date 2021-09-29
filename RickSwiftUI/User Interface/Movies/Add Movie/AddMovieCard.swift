@@ -7,10 +7,11 @@
 
 import SwiftUI
 
-struct AddMovieCard: View {
+struct AddMovieCard<MovieAdder: MovieAdderProtocol>: View {
     let movie: MovieSearchResult
     @State var shouldPresentSheet: Bool = false
-    let addMovieAction: (Movie) -> Void
+    let movieAdder: MovieAdder
+    let movieDatabase: MovieDatabaseProtocol
 
     var body: some View {
         MovieCard(posterURL: movie.posterUrl) {
@@ -28,20 +29,27 @@ struct AddMovieCard: View {
             shouldPresentSheet = false
         } content: {
             let viewModel = AddMovieDetailsViewModel(imdbID: movie.id,
-                                                     movieDatabase: MockMovieDatabase())
+                                                     movieDatabase: movieDatabase)
             AddMovieDetailsView(viewModel: viewModel,
-                                isPresented: $shouldPresentSheet) { imdbID in
-                addMovieAction(imdbID)
-            }
+                                isPresented: $shouldPresentSheet,
+                                movieAdder: self.movieAdder)
         }
 
     }
 }
 
 struct AddMovieCard_Previews: PreviewProvider {
+    private struct Adder: MovieAdderProtocol {
+        func addMovie(movie: Movie, completion: @escaping (NetworkResult<Bool>) -> Void) {
+            return
+        }
+    }
+
     static var previews: some View {
-        AddMovieCard(movie: MockMovieDatabase.endgameSerchResults[0]) { _ in
-            print("Add movie tapped")
-        }.preferredColorScheme(.dark)
+        AddMovieCard(movie:
+                        MockMovieDatabase.endgameSerchResults[0],
+                     movieAdder: Adder(),
+                     movieDatabase: MockMovieDatabase())
+            .preferredColorScheme(.dark)
     }
 }

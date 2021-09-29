@@ -7,11 +7,23 @@
 
 import SwiftUI
 
-struct AddMovieView: View {
+protocol MovieAdderProtocol {
+    func addMovie(movie: Movie, completion: @escaping (NetworkResult<Bool>) -> Void)
+}
+
+struct AddMovieView<MovieAdder: MovieAdderProtocol>: View {
     @State var searchText: String = ""
     @ObservedObject
-    private var searcher: AddMovieSearcher = AddMovieSearcher(movieDatabase: MockMovieDatabase())
-    let addMovieAction: (Movie) -> Void
+    private var searcher: AddMovieSearcher
+    private let movieAdder: MovieAdder
+    private let movieDatabase: MovieDatabaseProtocol
+
+    init(movieAdder: MovieAdder,
+         movieDatabase: MovieDatabaseProtocol) {
+        self.movieAdder = movieAdder
+        self.movieDatabase = movieDatabase
+        self.searcher = AddMovieSearcher(movieDatabase: movieDatabase)
+    }
 
     var body: some View {
         VStack(spacing: 16) {
@@ -60,9 +72,9 @@ struct AddMovieView: View {
         ScrollView {
             LazyVStack(spacing: 16) {
                 ForEach(movies, id: \.id) { movie in
-                    AddMovieCard(movie: movie) { imdbID in
-                        addMovieAction(imdbID)
-                    }
+                    AddMovieCard(movie: movie,
+                                 movieAdder: self.movieAdder,
+                                 movieDatabase: self.movieDatabase)
                 }
             }
         }
@@ -70,10 +82,15 @@ struct AddMovieView: View {
 }
 
 struct AddMovieView_Previews: PreviewProvider {
+    private struct Adder: MovieAdderProtocol {
+        func addMovie(movie: Movie, completion: @escaping (NetworkResult<Bool>) -> Void) {
+            return
+        }
+    }
+
     static var previews: some View {
-        AddMovieView(addMovieAction: { imdbID in
-            print("Add movie tapped")
-        })
+        AddMovieView(movieAdder: Adder(),
+                     movieDatabase: MockMovieDatabase())
             .preferredColorScheme(.dark)
     }
 }

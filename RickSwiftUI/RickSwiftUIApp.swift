@@ -9,20 +9,23 @@ import SwiftUI
 
 @main
 struct RickSwiftUIApp: App {
+    private struct MovieAdder: MovieAdderProtocol {
+        func addMovie(movie: Movie, completion: @escaping (NetworkResult<Bool>) -> Void) {
+            print("called add movie for \(movie.title)")
+        }
+    }
+
     var body: some Scene {
         WindowGroup {
             #if DEBUG
-//            let model = LocalMovieWatchList(movieFetcher: MockMovieInformationFetcher())
-            let watchList = WatchList<String>(elements: ["tt4154796", "tt0110357", "tt2582802", "tt0338013", "tt0485947"])
-            let model = MovieWatchList(movieFetcher: MovieInformationFetcher(),
-                                       idWatchList: watchList)
+            let model = MovieWatchList(movieFetcher: MockMovieInformationFetcher(),
+                                       idWatchList: WatchList<String>())
             #else
-            let model = LocalMovieWatchList(movieFetcher: MovieInformationFetcher())
+            let model = MovieWatchList(movieFetcher:    MovieInformationFetcher(),
+                                       idWatchList: WatchList<String>())
             #endif
             let viewModel = MovieWatchListViewModel(model: model)
-//            let viewModel = MovieListCoordinatorViewModel(model: model)
-//            MovieListCoordinator(viewModel: viewModel)
-            MovieWatchListView(viewModel: viewModel)
+            MovieWatchListView(viewModel: viewModel, movieDatabase: MockMovieDatabase())
         }
     }
 }

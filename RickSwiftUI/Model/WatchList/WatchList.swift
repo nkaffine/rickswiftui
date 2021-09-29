@@ -77,7 +77,7 @@ struct WatchList<Element: Equatable>: WatchListProtocol {
     mutating func markWatched(element: Element,
                               completion: @escaping (NetworkResult<Bool>) -> Void) {
         itemsLock.lock()
-        guard var index = index(matching: element) else {
+        guard let index = index(matching: element) else {
             completion(.success(false))
             return
         }
@@ -91,7 +91,7 @@ struct WatchList<Element: Equatable>: WatchListProtocol {
     mutating func markUnwatched(element: Element,
                                 completion: @escaping (NetworkResult<Bool>) -> Void) {
         itemsLock.lock()
-        guard var index = index(matching: element) else {
+        guard let index = index(matching: element) else {
             completion(.success(false))
             return
         }

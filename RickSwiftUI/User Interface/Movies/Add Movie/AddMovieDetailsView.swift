@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-struct AddMovieDetailsView: View {
+struct AddMovieDetailsView<MovieAdder: MovieAdderProtocol>: View {
     @ObservedObject
     var viewModel: AddMovieDetailsViewModel
     @Binding
     var isPresented: Bool
-    let addMovieAction: (Movie) -> Void
+    let movieAdder: MovieAdder
 
     var body: some View {
         switch viewModel.movieDetails {
@@ -40,7 +40,10 @@ struct AddMovieDetailsView: View {
                                                   posterUrl: displayableMovie.posterURL,
                                                   hasBeenWatched: false,
                                                   availableStreamingPlatforms: [])
-                                addMovieAction(movie)
+                                self.movieAdder.addMovie(movie: movie, completion: { result in
+                                    // TODO: something else
+                                    return
+                                })
                                 isPresented = false
                             }
                         }
@@ -56,10 +59,18 @@ struct AddMovieDetailsView: View {
 }
 
 struct AddMovieDetailsView_Previews: PreviewProvider {
-    static var previews: some View {
-        AddMovieDetailsView(viewModel: AddMovieDetailsViewModel(imdbID: "", movieDatabase: MockMovieDatabase()), isPresented: .constant(false)) { movieID in
-            print("Movie ID added: \(movieID)")
+    private struct Adder: MovieAdderProtocol {
+        func addMovie(movie: Movie, completion: @escaping (NetworkResult<Bool>) -> Void) {
+            return
         }
+    }
+
+    static var previews: some View {
+        AddMovieDetailsView(viewModel:
+                                AddMovieDetailsViewModel(imdbID: "",
+                                                         movieDatabase: MockMovieDatabase()),
+                            isPresented: .constant(false),
+                            movieAdder: Adder())
             .preferredColorScheme(.dark)
     }
 }

@@ -63,3 +63,21 @@ class MovieWatchListViewModel<WatchList: WatchListProtocol>: ObservableObject, M
         }
     }
 }
+
+extension MovieWatchListViewModel: MovieAdderProtocol {
+    func addMovie(movie: Movie, completion: @escaping (NetworkResult<Bool>) -> Void) {
+        self.model.add(element: movie) { result in
+            switch result {
+                case .success:
+                    DispatchQueue.main.async {
+                        self.loadUnwatched()
+                    }
+                default:
+                    break
+            }
+            DispatchQueue.main.async {
+                completion(result)
+            }
+        }
+    }
+}
