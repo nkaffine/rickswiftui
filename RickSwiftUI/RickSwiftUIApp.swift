@@ -9,23 +9,22 @@ import SwiftUI
 
 @main
 struct RickSwiftUIApp: App {
-    private struct MovieAdder: MovieAdderProtocol {
-        func addMovie(movie: Movie, completion: @escaping (NetworkResult<Bool>) -> Void) {
-            print("called add movie for \(movie.title)")
-        }
-    }
-
     var body: some Scene {
         WindowGroup {
             #if DEBUG
-            let model = MovieWatchList(movieFetcher: MockMovieInformationFetcher(),
-                                       idWatchList: WatchList<String>())
+            let movieFetcher = MovieInformationFetcher()
+            let idWatchList = WatchList<String>()
+            let movieDatabase = MovieDatabase()
             #else
-            let model = MovieWatchList(movieFetcher:    MovieInformationFetcher(),
-                                       idWatchList: WatchList<String>())
+            let movieFetcher = MovieInformationFetcher()
+            let idWatchList = WatchList<String>()
+            let movieDatabase = MovieDatabase()
             #endif
+            let model = MovieWatchList(movieFetcher: movieFetcher,
+                                       idWatchList: idWatchList)
             let viewModel = MovieWatchListViewModel(model: model)
-            MovieWatchListView(viewModel: viewModel, movieDatabase: MockMovieDatabase())
+            MovieWatchListView(viewModel: viewModel,
+                               movieDatabase: movieDatabase)
         }
     }
 }

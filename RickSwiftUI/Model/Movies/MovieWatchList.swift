@@ -69,14 +69,23 @@ struct MovieWatchList<IDWatchList: WatchListProtocol>: WatchListProtocol where I
                         movieInfomation.convertToMovie(watched: watchStatus,
                                                        streamingPlatforms: [])
                     }
-                    completion(.success(movies))
+                    DispatchQueue.main.async {
+                        completion(.success(movies))
+                    }
                 }
             case .serverError(let error):
-                completion(.serverError(error))
+                DispatchQueue.main.async {
+                    completion(.serverError(error))
+                }
+
             case .networkError(let error):
-                completion(.networkError(error))
+                DispatchQueue.main.async {
+                    completion(.networkError(error))
+                }
             case .decodingError(let error):
-                completion(.decodingError(error))
+                DispatchQueue.main.async {
+                    completion(.decodingError(error))
+                }
         }
     }
 

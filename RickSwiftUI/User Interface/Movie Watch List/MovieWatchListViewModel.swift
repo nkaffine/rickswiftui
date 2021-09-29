@@ -13,10 +13,13 @@ class MovieWatchListViewModel<WatchList: WatchListProtocol>: ObservableObject, M
     var movies: RemoteLoadable<[Movie]>
     @Published
     private var model: WatchList
+    @Published
+    private (set) var shouldShowSearch: Bool
 
     init(model: WatchList) {
         self.model = model
         self.movies = .loading
+        self.shouldShowSearch = false
     }
 
     // MARK: Intents
@@ -62,6 +65,10 @@ class MovieWatchListViewModel<WatchList: WatchListProtocol>: ObservableObject, M
             }
         }
     }
+
+    func startSearching() {
+        self.shouldShowSearch = true
+    }
 }
 
 extension MovieWatchListViewModel: MovieAdderProtocol {
@@ -79,5 +86,9 @@ extension MovieWatchListViewModel: MovieAdderProtocol {
                 completion(result)
             }
         }
+    }
+
+    func didFinishAddingMovie() {
+        self.shouldShowSearch = false
     }
 }

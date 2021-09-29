@@ -11,7 +11,14 @@ struct MovieWatchListView<List: WatchListProtocol>: View where List.Element == M
     @ObservedObject
     var viewModel: MovieWatchListViewModel<List>
     let movieDatabase: MovieDatabaseProtocol
-    @State var isPresentingAddMovie = false
+    @State private var shouldShowAddMovie: Bool = false
+
+    init(viewModel: MovieWatchListViewModel<List>,
+         movieDatabase: MovieDatabaseProtocol) {
+        self.viewModel = viewModel
+        self.movieDatabase = movieDatabase
+        self.shouldShowAddMovie = viewModel.shouldShowSearch
+    }
 
     var body: some View {
         VStack {
@@ -20,21 +27,24 @@ struct MovieWatchListView<List: WatchListProtocol>: View where List.Element == M
                 Spacer()
             }
             .padding(16)
-            ZStack {
+            ZStack(alignment: .bottomLeading) {
                 MovieWatchListBodyView(viewModel: viewModel)
                 AddMovieButton().onTapGesture {
-                    isPresentingAddMovie = true
+                    viewModel.startSearching()
                 }
+                .padding(16)
             }
         }.onAppear {
             viewModel.loadUnwatched()
-        }.sheet(isPresented: $isPresentingAddMovie) {
-            isPresentingAddMovie = false
+        }.sheet(isPresented: $shouldShowAddMovie) {
+            viewModel.didFinishAddingMovie()
         } content: {
             AddMovieView(movieAdder: viewModel,
                          movieDatabase: movieDatabase)
         }
-
+        .onReceive(viewModel.$shouldShowSearch) { newValue in
+            shouldShowAddMovie = newValue
+        }
     }
 }
 

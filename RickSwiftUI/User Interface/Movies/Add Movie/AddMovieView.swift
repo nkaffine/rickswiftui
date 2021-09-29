@@ -9,6 +9,7 @@ import SwiftUI
 
 protocol MovieAdderProtocol {
     func addMovie(movie: Movie, completion: @escaping (NetworkResult<Bool>) -> Void)
+    func didFinishAddingMovie()
 }
 
 struct AddMovieView<MovieAdder: MovieAdderProtocol>: View {
@@ -84,6 +85,9 @@ struct AddMovieView<MovieAdder: MovieAdderProtocol>: View {
 struct AddMovieView_Previews: PreviewProvider {
     private struct Adder: MovieAdderProtocol {
         func addMovie(movie: Movie, completion: @escaping (NetworkResult<Bool>) -> Void) {
+            return
+        }
+        func didFinishAddingMovie() {
             return
         }
     }

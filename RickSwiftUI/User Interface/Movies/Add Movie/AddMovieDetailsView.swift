@@ -41,8 +41,16 @@ struct AddMovieDetailsView<MovieAdder: MovieAdderProtocol>: View {
                                                   hasBeenWatched: false,
                                                   availableStreamingPlatforms: [])
                                 self.movieAdder.addMovie(movie: movie, completion: { result in
-                                    // TODO: something else
-                                    return
+                                    switch result {
+                                        case .success(let success):
+                                            if success {
+                                                self.movieAdder.didFinishAddingMovie()
+                                            } else {
+                                                return
+                                            }
+                                        default:
+                                            break
+                                    }
                                 })
                                 isPresented = false
                             }
@@ -61,6 +69,9 @@ struct AddMovieDetailsView<MovieAdder: MovieAdderProtocol>: View {
 struct AddMovieDetailsView_Previews: PreviewProvider {
     private struct Adder: MovieAdderProtocol {
         func addMovie(movie: Movie, completion: @escaping (NetworkResult<Bool>) -> Void) {
+            return
+        }
+        func didFinishAddingMovie() {
             return
         }
     }

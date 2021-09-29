@@ -43,6 +43,9 @@ struct AddMovieCard_Previews: PreviewProvider {
         func addMovie(movie: Movie, completion: @escaping (NetworkResult<Bool>) -> Void) {
             return
         }
+        func didFinishAddingMovie() {
+            return
+        }
     }
 
     static var previews: some View {
